@@ -13,7 +13,7 @@ const createUserSchema = zod.object({
   GovtID_Type: zod.string(),
   ID_Number: zod.string(), // Change to String for flexibility
   Category: zod.string(),
-  Load_Applied: { type: Number},
+  Load_Applied: zod.number(),
   Date_of_Application: zod.string()
   .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/, {
     message: "Invalid date format. Expected format: DD/MM/YY",
@@ -27,13 +27,19 @@ const createUserSchema = zod.object({
     message: "Invalid date format. Expected format: DD/MM/YY",
   }),
   Status: zod.string(),
-  Reviewer_ID: { type: Number},
+  Reviewer_ID: zod.number(),
   Reviewer_Name: zod.string(),
   Reviewer_Comments: zod.string(),
+})
+
+const createAdminSchema = zod.object({
+  Reviewer_ID : zod.number(),
+  Reviewer_Name : zod.string()
 })
 
 
 module.exports = ({
   createUserSchema,
+  createAdminSchema
 })
 

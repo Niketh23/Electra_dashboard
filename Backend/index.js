@@ -1,13 +1,42 @@
 const express = require("express");
-const {Users} = require("./db");
+const {Users, Admin} = require("./db");
 const cors = require('cors');
-const { createUserSchema} = require("./types");
+const { createUserSchema, createAdminSchema} = require("./types");
 const adminMiddleware = require("./middlewares/Admin");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
+
+app.post("/signUp",async(req,res)=>{
+  const UserDetails = req.body;
+  const ValidUserDetails = createAdminSchema.safeParse(UserDetails);
+
+  if(!ValidUserDetails.success){
+    res.status(411).json({
+      msg : "Invalid Admin credentials"
+    })
+  }
+  const Reviewer_ID = UserDetails.Reviewer_ID;
+  const Reviewer_Name = UserDetails.Reviewer_Name;
+
+  const response = await Admin.create({
+    Reviewer_ID : Reviewer_ID,
+    Reviewer_Name : Reviewer_Name
+  })
+
+  if(response){
+    res.status(200).json({
+      msg : "Admin Created Successfully"
+    })
+  }
+  else{
+    res.status(400).json({
+      msg : "Invalid User Details"
+    })
+  }
+})
 
 app.post("/addUsers", adminMiddleware, async (req, res) => {
   const userDetails = req.body;
