@@ -1,10 +1,12 @@
 const express = require("express");
 const Users = require("./db");
+const cors = require('cors');
 const { createUserSchema} = require("./types");
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.post("/addUsers", async (req, res) => {
   const userDetails = req.body;
@@ -88,8 +90,15 @@ app.put("/UpdateUsers", async (req, res) => {
   );
 });
 
-app.delete("/delete",(req,res)=>{
+app.post("/delete",async(req,res)=>{
+  const userId = req.body;
+  awaitUsers.deleteOne({
+    _id : userId
+  })
   
+  res.json({
+    msg : "User deleted successfully"
+  })
 })
 
 app.listen(3000,()=>{
