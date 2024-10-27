@@ -1,6 +1,6 @@
 const express = require("express");
 const Users = require("./db");
-const { createUserSchema } = require("./types");
+const { createUserSchema} = require("./types");
 
 const app = express();
 
@@ -38,8 +38,8 @@ app.post("/addUsers", async (req, res) => {
   });
 
   res.json({
-    msg : "User Details added Successfully"
-  })
+    msg: "User Details added Successfully",
+  });
 });
 
 app.get("/users", async (req, res) => {
@@ -49,4 +49,49 @@ app.get("/users", async (req, res) => {
   });
 });
 
-app.listen(3000);
+app.put("/UpdateUsers", async (req, res) => {
+  const UpdatedUser = req.body;
+  const ValidUpdatedUser = createUserSchema.safeParse(UpdatedUser);
+
+  if (!ValidUpdatedUser.success) {
+    res.status(411).json({
+      msg: "Invalid User updates",
+    });
+  }
+
+  await Users.updateOne(
+    {
+      _id: req.body.id,
+    },
+    {
+      $set: {
+        ID: ValidUpdatedUser.ID,
+        Applicant_Name: ValidUpdatedUser.Applicant_Name,
+        Gender: ValidUpdatedUser.Gender,
+        District: ValidUpdatedUser.District,
+        State: ValidUpdatedUser.State,
+        Pincode: ValidUpdatedUser.Pincode,
+        Ownership: ValidUpdatedUser.Ownership,
+        GovtID_Type: ValidUpdatedUser.GovtID_Type,
+        ID_Number: ValidUpdatedUser.ID_Number,
+        Category: ValidUpdatedUser.Category,
+        Load_Applied: ValidUpdatedUser.Load_Applied,
+        Date_of_Application: ValidUpdatedUser.Date_of_Application,
+        Date_of_Approval: ValidUpdatedUser.Date_of_Approval,
+        Modified_Date: ValidUpdatedUser.Modified_Date,
+        Status: ValidUpdatedUser.Status,
+        Reviewer_ID: ValidUpdatedUser.Reviewer_ID,
+        Reviewer_Name: ValidUpdatedUser.Reviewer_Name,
+        Reviewer_Comments: ValidUpdatedUser.Reviewer_Comments,
+      },
+    }
+  );
+});
+
+app.delete("/delete",(req,res)=>{
+  
+})
+
+app.listen(3000,()=>{
+  console.log("running on port 3000");
+});

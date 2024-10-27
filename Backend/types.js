@@ -34,6 +34,6 @@ const createUserSchema = zod.object({
 
 
 module.exports = ({
-  createUserSchema
+  createUserSchema,
 })
 
