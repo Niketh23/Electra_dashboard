@@ -21,7 +21,7 @@ const createUserSchema = zod.object({
   Date_of_Approval: zod.string()
   .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/, {
     message: "Invalid date format. Expected format: DD/MM/YY",
-  }).or(z.null()),
+  }).or(zod.null()),
   Modified_Date: zod.string()
   .regex(/^(0[1-9]|[12]\d|3[01])\/(0[1-9]|1[0-2])\/\d{2}$/, {
     message: "Invalid date format. Expected format: DD/MM/YY",
