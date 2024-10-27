@@ -1,14 +1,15 @@
 const express = require("express");
-const Users = require("./db");
+const {Users} = require("./db");
 const cors = require('cors');
 const { createUserSchema} = require("./types");
+const adminMiddleware = require("./middlewares/Admin");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.post("/addUsers", async (req, res) => {
+app.post("/addUsers", adminMiddleware, async (req, res) => {
   const userDetails = req.body;
   const ValidaUserDetails = createUserSchema.safeParse(userDetails);
 
@@ -51,7 +52,7 @@ app.get("/users", async (req, res) => {
   });
 });
 
-app.put("/UpdateUsers", async (req, res) => {
+app.put("/UpdateUsers", adminMiddleware, async (req, res) => {
   const UpdatedUser = req.body;
   const ValidUpdatedUser = createUserSchema.safeParse(UpdatedUser);
 
@@ -90,7 +91,7 @@ app.put("/UpdateUsers", async (req, res) => {
   );
 });
 
-app.post("/delete",async(req,res)=>{
+app.post("/delete", adminMiddleware, async(req,res)=>{
   const userId = req.body;
   awaitUsers.deleteOne({
     _id : userId
