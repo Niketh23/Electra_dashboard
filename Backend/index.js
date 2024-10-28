@@ -1,42 +1,64 @@
 const express = require("express");
-const {Users, Admin} = require("./db");
-const cors = require('cors');
-const { createUserSchema, createAdminSchema} = require("./types");
+const { Users, Admin } = require("./db");
+const cors = require("cors");
+const { createUserSchema, createAdminSchema } = require("./types");
 const adminMiddleware = require("./middlewares/Admin");
+const jwt = require("jsonwebtoken");
+const secret = require("./secret");
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.post("/signUp",async(req,res)=>{
+app.post("/signUp", async (req, res) => {
   const UserDetails = req.body;
   const ValidUserDetails = createAdminSchema.safeParse(UserDetails);
 
-  if(!ValidUserDetails.success){
+  if (!ValidUserDetails.success) {
     res.status(411).json({
-      msg : "Invalid Admin credentials"
-    })
+      msg: "Invalid Admin credentials",
+    });
   }
   const Reviewer_ID = UserDetails.Reviewer_ID;
   const Reviewer_Name = UserDetails.Reviewer_Name;
 
   const response = await Admin.create({
-    Reviewer_ID : Reviewer_ID,
-    Reviewer_Name : Reviewer_Name
-  })
+    Reviewer_ID: Reviewer_ID,
+    Reviewer_Name: Reviewer_Name,
+  });
 
-  if(response){
+  if (response) {
     res.status(200).json({
-      msg : "Admin Created Successfully"
-    })
-  }
-  else{
+      msg: "Admin Created Successfully",
+    });
+  } else {
     res.status(400).json({
-      msg : "Invalid User Details"
-    })
+      msg: "Invalid User Details",
+    });
   }
-})
+});
+
+app.post("/signIn", async (req, res) => {
+  const Reviewer_ID = req.body.Reviewer_ID;
+  const Reviewer_Name = req.body.Reviewer_Name;
+
+  const response = Admin.findOne({
+    Reviewer_ID,
+    Reviewer_Name,
+  });
+
+  if (response) {
+    const token = jwt.sign({ Reviewer_Name }, secret);
+    res.json({
+      token: token,
+    });
+  } else {
+    res.status(411).json({
+      msg: "User doesn't exixts",
+    });
+  }
+});
 
 app.post("/addUsers", adminMiddleware, async (req, res) => {
   const userDetails = req.body;
@@ -120,17 +142,17 @@ app.put("/UpdateUsers", adminMiddleware, async (req, res) => {
   );
 });
 
-app.post("/delete", adminMiddleware, async(req,res)=>{
+app.post("/delete", adminMiddleware, async (req, res) => {
   const userId = req.body;
   awaitUsers.deleteOne({
-    _id : userId
-  })
-  
-  res.json({
-    msg : "User deleted successfully"
-  })
-})
+    _id: userId,
+  });
 
-app.listen(3000,()=>{
+  res.json({
+    msg: "User deleted successfully",
+  });
+});
+
+app.listen(3000, () => {
   console.log("running on port 3000");
 });
